@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eden Akshoti</title>
+  <link rel="icon" type="image/png" href="assets/favicon_eden.png">
+  <style>
+    @font-face {
+      font-family: 'Roboto';
+      src: url('assets/font roboto/Roboto-Regular.ttf') format('truetype');
+      font-weight: 400; font-style: normal;
+    }
+    @font-face {
+      font-family: 'Roboto';
+      src: url('assets/font roboto/Roboto-Medium.ttf') format('truetype');
+      font-weight: 500; font-style: normal;
+    }
+    @font-face {
+      font-family: 'Roboto';
+      src: url('assets/font roboto/Roboto-Light.ttf') format('truetype');
+      font-weight: 300; font-style: normal;
+    }
+    @font-face {
+      font-family: 'Roboto';
+      src: url('assets/font roboto/Roboto-LightItalic.ttf') format('truetype');
+      font-weight: 300; font-style: italic;
+    }
+    @font-face {
+      font-family: 'Roboto';
+      src: url('assets/font roboto/Roboto-Italic.ttf') format('truetype');
+      font-weight: 400; font-style: italic;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #151515;
+      --text-pri:  rgba(255,255,255,0.85);
+      --text-sec:  rgba(255,255,255,0.75);
+      --accent:    #ffc600;
+      --nav-w:     24%;
+      --nav-pad:   1.5rem;   /* nav horizontal padding */
+      --pad:       2rem;     /* content horizontal & vertical padding */
+      --border:    rgba(255,255,255,0.18);
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text-pri);
+      font-family: 'Roboto', sans-serif;
+      min-height: 100vh;
+    }
+
+    a { color: inherit; text-decoration: none; transition: color 0.15s; }
+    a:active { opacity: 0.7; }
+
+    hr {
+      border: 0;
+      border-top: 1px solid var(--border);
+      /* stretch edge-to-edge within content padding */
+      margin: 2.5rem calc(-1 * var(--pad));
+    }
+
+    img { display: block; }
+
+    /* ═══════════════════════════════════ NAV */
+
+    #desktop-nav {
+      position: fixed;
+      top: 0; left: 0;
+      width: var(--nav-w);
+      height: 100vh;
+      padding: var(--nav-pad) 0; /* horizontal padding handled per-element */
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+    }
+
+    /* Brand — single line filling nav width; formula: nav_content_width / em-width of full string */
+    .nav-brand {
+      font-weight: 400;
+      font-size: calc((24vw - 3rem) / 7.2);
+      line-height: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      color: var(--text-pri);
+      cursor: pointer;
+      padding: 0 var(--nav-pad) var(--nav-pad);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+    .nav-brand:hover { color: var(--text-pri); }
+
+    .nav-main { flex: 1; }
+
+    .nav-main ol {
+      list-style: none;
+      counter-reset: nav-c;
+      padding: 0;
+    }
+
+    .nav-main ol li {
+      counter-increment: nav-c;
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+      padding: 0.55rem var(--nav-pad);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .nav-main ol li::before {
+      content: counter(nav-c) ".";
+      font-size: 1rem;
+      color: var(--text-pri);
+      min-width: 1.4rem;
+      line-height: 1.4;
+    }
+
+    .nav-main ol li a {
+      font-size: 1rem;
+      font-weight: 400;
+      color: var(--text-pri);
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .nav-main ol li a:hover,
+    .nav-main ol li a.active { color: var(--accent); }
+
+    /* ═══════════════════════════════════ CONTENT */
+
+    #content {
+      margin-left: var(--nav-w);
+      width: calc(100% - var(--nav-w));
+      min-height: 100vh;
+    }
+
+    .page {
+      display: none;
+      padding: var(--pad);
+    }
+    .page.active { display: block; }
+
+    .page-title {
+      font-size: 2.6rem;
+      font-weight: 500;
+      line-height: 1;
+      margin-bottom: 2rem;
+      text-transform: uppercase;
+    }
+
+    .caption {
+      font-weight: 500;
+      font-style: normal;
+      font-size: 2rem;
+      line-height: 1.2;
+      color: var(--text-pri);
+      margin-bottom: 1rem;
+      display: block;
+      text-transform: uppercase;
+    }
+
+    .project { margin-bottom: 0.5rem; }
+    .project + .project { margin-top: 0; }
+
+    .project-body {
+      margin: 1.2rem 0;
+      font-size: 1.1rem;
+      font-weight: 300;
+      line-height: 1.5;
+      color: var(--text-sec);
+    }
+    .project-body a { color: var(--text-sec); }
+    .project-body a:hover { color: var(--accent); }
+
+    .link { text-decoration: underline; color: var(--text-sec); }
+    .link:hover { color: var(--accent); }
+
+    /* ═══════════════════════════════════ SLIDESHOW (auto-scroll + manual arrows) */
+
+    .slideshow {
+      position: relative;
+      overflow: hidden;
+      margin: 1.2rem 0;
+      width: 100%;
+      user-select: none;
+    }
+
+    .slides-track {
+      display: flex;
+      gap: 0.4rem;
+      width: max-content;
+      will-change: transform;
+    }
+
+    .slides-track img {
+      flex-shrink: 0;
+      height: calc(100vh - 14rem);
+      width: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .slide-prev, .slide-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      font-size: 2.8rem;
+      line-height: 1;
+      cursor: none !important;
+      padding: 0.5rem;
+      z-index: 10;
+      transition: opacity 0.15s;
+    }
+    .slide-prev:hover, .slide-next:hover { opacity: 0.6; }
+    .slide-prev { left: 0; }
+    .slide-next { right: 0; }
+
+    /* ═══════════════════════════════════ SINGLE IMAGE */
+
+    .img-single {
+      margin: 1.2rem 0;
+      width: 100%;
+    }
+    .img-single img {
+      width: 100%;
+      max-height: calc(100vh - 12rem);
+      object-fit: contain;
+    }
+
+    /* ═══════════════════════════════════ VIDEO EMBED */
+
+    .video-wrap {
+      margin: 1.2rem 0;
+      width: 100%;
+    }
+    .video-wrap iframe {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border: none;
+      display: block;
+    }
+
+    /* ═══════════════════════════════════ HOMEPAGE */
+
+    #page-homepage {
+      position: fixed;
+      inset: 0;
+      display: none;
+      z-index: 0;
+      background: #0f070c;
+    }
+    #page-homepage.active { display: block; }
+    #page-homepage iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%; height: 100%;
+      border: none;
+      pointer-events: none;
+    }
+
+    /* ═══════════════════════════════════ ABOUT */
+
+    .about-text p {
+      font-size: 2rem;
+      font-weight: 400;
+      line-height: 1.3;
+      color: var(--text-pri);
+      margin-bottom: 1.4rem;
+      text-align: left;
+    }
+
+    .about-photo {
+      margin: 2rem 0;
+    }
+    .about-photo img {
+      width: 60%;
+      max-width: 480px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .about-contact a {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 300;
+      color: var(--text-sec);
+      line-height: 2.2;
+    }
+    .about-contact a:hover { color: var(--accent); }
+
+    /* ═══════════════════════════════════ FOOTER */
+
+    .nav-footer {
+      padding: 5rem var(--nav-pad) var(--nav-pad);
+      font-size: 0.6rem;
+      font-weight: 300;
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 0.04em;
+      line-height: 1.6;
+    }
+    .nav-footer a { color: rgba(255,255,255,0.22); text-decoration: underline; }
+    .nav-footer a:hover { color: var(--accent); }
+
+    /* ═══════════════════════════════════ MOBILE HEADER */
+
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      z-index: 200;
+      padding: 1.2rem 1.5rem;
+      background: var(--bg);
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .mobile-header .nav-brand {
+      font-size: 1rem;
+      margin-bottom: 0;
+      padding: 0;
+      border: none;
+      word-break: normal;
+    }
+    .hamburger {
+      background: none; border: none; cursor: pointer;
+      display: flex; flex-direction: column; gap: 5px; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 2px; background: var(--text-pri);
+    }
+
+    /* ═══════════════════════════════════ MOBILE OVERLAY */
+
+    .mobile-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: #000; z-index: 300;
+      padding: 2rem 1.5rem;
+      flex-direction: column; overflow-y: auto;
+    }
+    .mobile-overlay.open { display: flex; }
+    .mobile-overlay-close {
+      position: absolute; top: 1.2rem; right: 1.5rem;
+      background: none; border: none;
+      color: var(--text-pri); font-size: 2.2rem;
+      cursor: pointer; line-height: 1;
+    }
+    .mobile-overlay .nav-brand {
+      font-size: 1.6rem; margin-bottom: 2.5rem;
+      padding: 0; border: none; word-break: normal;
+    }
+    .mobile-overlay ol {
+      list-style: none; counter-reset: mob-c; padding: 0;
+    }
+    .mobile-overlay ol li {
+      counter-increment: mob-c;
+      display: flex; gap: 0.5rem; margin-bottom: 0.6rem;
+    }
+    .mobile-overlay ol li::before {
+      content: counter(mob-c) "."; font-size: 1.4rem;
+    }
+    .mobile-overlay ol li a {
+      font-size: 1.4rem; color: var(--text-pri); text-transform: uppercase;
+    }
+    .mobile-overlay ol li a:hover { color: var(--accent); }
+
+    /* ═══════════════════════════════════ CURSOR CANVAS */
+
+    #cursor-canvas {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 9999;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      * { cursor: none !important; }
+    }
+
+    /* ═══════════════════════════════════ PDF MODAL */
+
+    .pdf-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: var(--nav-w);
+      right: 0;
+      bottom: 0;
+      background: var(--bg);
+      z-index: 10000;
+      flex-direction: column;
+    }
+    .pdf-modal.open { display: flex; }
+
+    .pdf-modal-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.9rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .pdf-modal-title {
+      font-size: 0.75rem;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-sec);
+    }
+
+    .pdf-modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .pdf-action-btn {
+      background: none;
+      border: none;
+      font-family: 'Roboto', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-sec);
+      cursor: pointer;
+      text-decoration: none;
+      transition: color 0.15s;
+      padding: 0;
+      line-height: 1;
+    }
+    .pdf-action-btn:hover { color: var(--accent); }
+
+    .pdf-action-close {
+      font-size: 1.6rem;
+      line-height: 1;
+      color: var(--text-pri);
+    }
+
+    .pdf-frame {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #1a1a1a;
+    }
+
+    /* reset for <button> used as inline link */
+    button.link {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font: inherit;
+      padding: 0;
+    }
+
+    /* ═══════════════════════════════════ RESPONSIVE */
+
+    @media (max-width: 768px) {
+      #desktop-nav { display: none; }
+      .mobile-header { display: flex; }
+
+      #content { margin-left: 0; width: 100%; }
+      .page { padding: 5rem 1.5rem 3rem; }
+
+      hr { margin-left: -1.5rem; margin-right: -1.5rem; }
+
+      .about-text p { font-size: 1.3rem; }
+      .caption { font-size: 1.5rem; }
+      .about-photo img { width: 80%; max-width: 300px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Desktop Nav ─── -->
+<nav id="desktop-nav">
+  <span class="nav-brand" onclick="go('homepage')">EDEN AKSHOTI</span>
+
+  <div class="nav-main">
+    <ol>
+      <li><a href="#film-works"       data-page="film-works">Film Works</a></li>
+      <li><a href="#video-editing"    data-page="video-editing">Video Editing</a></li>
+      <li><a href="#screenwriting"    data-page="screenwriting">Screenwriting</a></li>
+      <li><a href="#prose-and-poetry" data-page="prose-and-poetry">Prose and Poetry</a></li>
+      <li><a href="#music"            data-page="music">Music</a></li>
+      <li><a href="#about"            data-page="about">About + Contact</a></li>
+    </ol>
+  </div>
+
+  <div class="nav-footer">
+    &copy; Eden Akshoti.<br>
+    Website built by <a href="https://daria-shoshani.com" target="_blank" rel="noopener">Daria Shoshani</a>
+  </div>
+</nav>
+
+<!-- ─── Mobile Header ─── -->
+<header class="mobile-header">
+  <span class="nav-brand" onclick="go('homepage')">EDEN AKSHOTI</span>
+  <button class="hamburger" onclick="openNav()" aria-label="Open menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- ─── Mobile Overlay ─── -->
+<div class="mobile-overlay" id="mob-overlay">
+  <button class="mobile-overlay-close" onclick="closeNav()" aria-label="Close menu">×</button>
+  <span class="nav-brand" onclick="closeNav(); go('homepage')">EDEN AKSHOTI</span>
+  <ol>
+    <li><a href="#film-works"       onclick="closeNav()">Film Works</a></li>
+    <li><a href="#video-editing"    onclick="closeNav()">Video Editing</a></li>
+    <li><a href="#screenwriting"    onclick="closeNav()">Screenwriting</a></li>
+    <li><a href="#prose-and-poetry" onclick="closeNav()">Prose and Poetry</a></li>
+    <li><a href="#music"            onclick="closeNav()">Music</a></li>
+    <li><a href="#about"            onclick="closeNav()">About + Contact</a></li>
+  </ol>
+</div>
+
+<!-- ─── Homepage ─── -->
+<div id="page-homepage" class="active">
+  <iframe
+    src="https://www.youtube-nocookie.com/embed/ufvg7bfTD5o?autoplay=1&mute=1&loop=1&playlist=ufvg7bfTD5o&controls=0&showinfo=0&rel=0&playsinline=1"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen title="Eden Akshoti Showreel">
+  </iframe>
+</div>
+
+<!-- ─── Content ─── -->
+<div id="content" style="display:none;">
+
+  <!-- ── Film Works ── -->
+  <section id="page-film-works" class="page">
+    <h1 class="page-title">Film Works</h1>
+
+    <div class="project">
+      <hr>
+      <span class="caption">Eggshell (2026 &ndash; in postproduction) &mdash; Writer and Director</span>
+      <div class="slideshow">
+        <button class="slide-prev">&#8592;</button>
+        <div class="slides-track">
+          <img src="assets/Film_Works/egg_shell/1.jpg" alt="Eggshell still 1">
+          <img src="assets/Film_Works/egg_shell/2.jpg" alt="Eggshell still 2">
+          <img src="assets/Film_Works/egg_shell/3.jpg" alt="Eggshell still 3">
+          <img src="assets/Film_Works/egg_shell/4.jpg" alt="Eggshell still 4">
+          <img src="assets/Film_Works/egg_shell/5.jpg" alt="Eggshell still 5">
+          <img src="assets/Film_Works/egg_shell/6.jpg" alt="Eggshell still 6">
+          <img src="assets/Film_Works/egg_shell/1.jpg" alt="">
+          <img src="assets/Film_Works/egg_shell/2.jpg" alt="">
+          <img src="assets/Film_Works/egg_shell/3.jpg" alt="">
+          <img src="assets/Film_Works/egg_shell/4.jpg" alt="">
+          <img src="assets/Film_Works/egg_shell/5.jpg" alt="">
+          <img src="assets/Film_Works/egg_shell/6.jpg" alt="">
+        </div>
+        <button class="slide-next">&#8594;</button>
+      </div>
+      <div class="project-body">
+        Nevo, a 26-year-old video editor, isolates himself inside big spaces: editing suites,
+        his brother&rsquo;s apartment, the fragile architecture of a new relationship.<br><br>
+        Screened at Yozmat Smadar Film Festival, Jerusalem
+      </div>
+    </div>
+
+    <div class="project">
+      <hr>
+      <span class="caption">Sweet Talk (2025, 15&nbsp;min) &mdash; Writer and Director</span>
+      <div class="slideshow">
+        <button class="slide-prev">&#8592;</button>
+        <div class="slides-track">
+          <img src="assets/Film_Works/sweet_talk/1.png" alt="Sweet Talk still 1">
+          <img src="assets/Film_Works/sweet_talk/2.jpg" alt="Sweet Talk still 2">
+          <img src="assets/Film_Works/sweet_talk/3.jpg" alt="Sweet Talk still 3">
+          <img src="assets/Film_Works/sweet_talk/4.jpg" alt="Sweet Talk still 4">
+          <img src="assets/Film_Works/sweet_talk/5.jpg" alt="Sweet Talk still 5">
+          <img src="assets/Film_Works/sweet_talk/1.png" alt="">
+          <img src="assets/Film_Works/sweet_talk/2.jpg" alt="">
+          <img src="assets/Film_Works/sweet_talk/3.jpg" alt="">
+          <img src="assets/Film_Works/sweet_talk/4.jpg" alt="">
+          <img src="assets/Film_Works/sweet_talk/5.jpg" alt="">
+        </div>
+        <button class="slide-next">&#8594;</button>
+      </div>
+      <div class="project-body">
+        A short film written and directed as part of his studies at the Sam Spiegel Film &amp;
+        Television School, independently.<br><br>
+        The film follows Noa and Noam, a young couple who, on a simple night out at a restaurant,
+        find themselves in a battle over the things left unsaid between them.<br><br>
+        Screened at Yozmat Smadar Film Festival, Jerusalem<br><br>
+        <a href="https://vimeo.com/1110473569" target="_blank" rel="noopener" class="link">Watch
+        film &mdash; password: sweettalk2025</a>
+      </div>
+    </div>
+
+    <div class="project">
+      <hr>
+      <span class="caption">Propaganda (2024, 2&nbsp;min) &mdash; Writer, Director and Actor</span>
+      <div class="slideshow">
+        <button class="slide-prev">&#8592;</button>
+        <div class="slides-track">
+          <img src="assets/Film_Works/propaganda/1.png" alt="Propaganda still 1">
+          <img src="assets/Film_Works/propaganda/2.jpg" alt="Propaganda still 2">
+          <img src="assets/Film_Works/propaganda/3.jpg" alt="Propaganda still 3">
+          <img src="assets/Film_Works/propaganda/1.png" alt="">
+          <img src="assets/Film_Works/propaganda/2.jpg" alt="">
+          <img src="assets/Film_Works/propaganda/3.jpg" alt="">
+        </div>
+        <button class="slide-next">&#8594;</button>
+      </div>
+      <div class="project-body">
+        A short film that received a development grant from the
+        <a href="https://kerenmakor.org.il/" target="_blank" rel="noopener">Makor Foundation</a>,
+        developed at the Sam Spiegel Film &amp; Television School.<br><br>
+        The film explores the boundaries between public speech and private thought through a
+        monologue delivered directly to the camera.
+      </div>
+    </div>
+
+    <div class="project">
+      <hr>
+      <span class="caption">Big Words From A Small Man (2022) &mdash; Screenwriter and Executive Producer</span>
+      <div class="img-single">
+        <img src="assets/Film_Works/big_words/1.jpg" alt="Big Words From A Small Man still">
+      </div>
+      <div class="project-body">
+        A student film directed by Idan Zarmon. A short documentary that follows a small man
+        delivering big words. Winner of the Jerusalem Mayor&rsquo;s Award.
+      </div>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube-nocookie.com/embed/Rg8GYYmNFO0?rel=0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen title="Big Words From A Small Man"></iframe>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── Screenwriting ── -->
+  <section id="page-screenwriting" class="page">
+    <h1 class="page-title">Screenwriting</h1>
+
+    <div class="project-body" style="margin-bottom:2rem;">
+      I began screenwriting four years ago &mdash; it started as an experiment for Idan
+      Zarmon&rsquo;s (dear friend and active artist) student film, and continued to studies
+      at Sam Spiegel Film and Television School.
+    </div>
+
+    <hr>
+
+    <div class="project">
+      <span class="caption">Faith</span>
+      <div class="project-body">
+        My final project at Sam Spiegel. A 6-episode drama about a destructive relationship
+        between a young male teacher and a religious female student.<br><br>
+        <button class="link" onclick="openPDF('assets/scripts/faith_eden_akshoti.pdf', 'Faith')">Read</button>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="project">
+      <span class="caption">Inheritance</span>
+      <div class="project-body">
+        A short film. Over the course of a scorching summer day in Haifa, three men &mdash;
+        grandfather, father, and son &mdash; find themselves on the thin line between life
+        and death, honor and love. All of it circling a meager, pitiful inheritance.<br><br>
+        <button class="link" onclick="openPDF('assets/scripts/Inheritance.pdf', 'Inheritance')">Read</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── Video Editing ── -->
+  <section id="page-video-editing" class="page">
+    <h1 class="page-title">Video Editing</h1>
+
+    <div class="project">
+      <hr>
+      <span class="caption">Ecoute &mdash; Live Session</span>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube-nocookie.com/embed/NAbpyfGkqu4?rel=0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen title="Ecoute Live Session"></iframe>
+      </div>
+    </div>
+
+    <div class="project">
+      <hr>
+      <span class="caption">Kleptomanim &mdash; Live Session</span>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube-nocookie.com/embed/OlGK_PJran4?rel=0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen title="Kleptomanim Live Session"></iframe>
+      </div>
+    </div>
+
+    <div class="project">
+      <hr>
+      <span class="caption">Bein HaHarisot &mdash; Live Session</span>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube-nocookie.com/embed/eXwOddLpj2k?rel=0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen title="Bein HaHarisot Live Session"></iframe>
+      </div>
+    </div>
+
+    <div class="project">
+      <hr>
+      <span class="caption">Long Time No See &mdash; Promotional Video</span>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube-nocookie.com/embed/6D8wHxt2p6w?rel=0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen title="Long Time No See promotional video"></iframe>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── Prose and Poetry ── -->
+  <section id="page-prose-and-poetry" class="page">
+    <h1 class="page-title">Prose and Poetry</h1>
+
+    <div class="project">
+      <span class="caption">&ldquo;In The Shadow&rdquo;</span>
+      <div class="img-single">
+        <img src="assets/Prose_Poetry/in the shadow.png" alt="In The Shadow — Iton 77">
+      </div>
+      <div class="project-body">A poem published in Iton 77</div>
+    </div>
+
+    <hr>
+
+    <div class="project">
+      <span class="caption">&ldquo;Aboutbul Can&rsquo;t Get Up&rdquo;</span>
+      <div class="slideshow">
+        <button class="slide-prev">&#8592;</button>
+        <div class="slides-track">
+          <img src="assets/Prose_Poetry/abutbul /2.jpg" alt="Aboutbul 1">
+          <img src="assets/Prose_Poetry/abutbul /3.jpg" alt="Aboutbul 2">
+          <img src="assets/Prose_Poetry/abutbul /4.jpg" alt="Aboutbul 3">
+          <img src="assets/Prose_Poetry/abutbul /5.jpg" alt="Aboutbul 4">
+          <img src="assets/Prose_Poetry/abutbul /6.jpg" alt="Aboutbul 5">
+          <img src="assets/Prose_Poetry/abutbul /2.jpg" alt="">
+          <img src="assets/Prose_Poetry/abutbul /3.jpg" alt="">
+          <img src="assets/Prose_Poetry/abutbul /4.jpg" alt="">
+          <img src="assets/Prose_Poetry/abutbul /5.jpg" alt="">
+          <img src="assets/Prose_Poetry/abutbul /6.jpg" alt="">
+        </div>
+        <button class="slide-next">&#8594;</button>
+      </div>
+      <div class="project-body">A self-published short story about a man who can&rsquo;t stand up by himself.</div>
+    </div>
+
+    <hr>
+
+    <div class="project">
+      <span class="caption">&ldquo;How to Speak Under the Crushing Force of the Fist&rdquo;</span>
+      <div class="slideshow">
+        <button class="slide-prev">&#8592;</button>
+        <div class="slides-track">
+          <img src="assets/Prose_Poetry/how to speak under/1.jpg" alt="How to Speak 1">
+          <img src="assets/Prose_Poetry/how to speak under/2.jpg" alt="How to Speak 2">
+          <img src="assets/Prose_Poetry/how to speak under/3.jpg" alt="How to Speak 3">
+          <img src="assets/Prose_Poetry/how to speak under/1.jpg" alt="">
+          <img src="assets/Prose_Poetry/how to speak under/2.jpg" alt="">
+          <img src="assets/Prose_Poetry/how to speak under/3.jpg" alt="">
+        </div>
+        <button class="slide-next">&#8594;</button>
+      </div>
+      <div class="project-body">
+        Published as part of
+        <a href="https://vbtb.bigcartel.com/product/daria-shoshani-lorenz-kunath-long-time-no-see"
+           target="_blank" rel="noopener">Long Time No See</a>
+        art magazine and exhibition by Daria Shoshani and Lorenz Kunath.
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="project">
+      <span class="caption">&ldquo;Compassion is a Dish Served Cold&rdquo;</span>
+      <div class="project-body">
+        A speech presented as part of Naomi Ben Or&rsquo;s MA final project
+        &ldquo;Evening of Talks&rdquo; at LUCA School of Arts, screened at
+        &ldquo;Fuge&rdquo; Leipzig<br><br>
+        <button class="link" onclick="openPDF('assets/Prose_Poetry/compassion is a dish best served cold.pdf', 'Compassion is a Dish Served Cold')">Read</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── Music ── -->
+  <section id="page-music" class="page">
+    <h1 class="page-title">Music</h1>
+
+    <div class="project-body" style="margin-bottom:2rem;">
+      I&rsquo;m an active member of two Jerusalem-based bands, Bein HaHarisot and Tualet.<br>
+      Performed in festivals and venues across Israel, including IndieNegev Festival,
+      Desert Rock Festival, HaFeder, Levontin 7, and others.
+    </div>
+
+    <hr>
+
+    <div class="project">
+      <span class="caption">Bein Haharisot</span>
+      <div class="slideshow">
+        <button class="slide-prev">&#8592;</button>
+        <div class="slides-track">
+          <img src="assets/Music/Bein Haharisot/1.jpg" alt="Bein Haharisot 1">
+          <img src="assets/Music/Bein Haharisot/2.PNG" alt="Bein Haharisot 2">
+          <img src="assets/Music/Bein Haharisot/1.jpg" alt="">
+          <img src="assets/Music/Bein Haharisot/2.PNG" alt="">
+        </div>
+        <button class="slide-next">&#8594;</button>
+      </div>
+      <div class="project-body">
+        Translated to &ldquo;In the Ruins&rdquo; &mdash; a post-punk hard rock band. Through
+        repetitive rhythms, abrasive guitars, and sharp-edged lyrics, the band explores themes
+        such as urban oppression, borders, and violence &mdash; with a focus on Jerusalem as a
+        confined space of coercion and restriction.
+      </div>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube-nocookie.com/embed/OQ2WswK0LRE?rel=0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen title="Bein HaHarisot"></iframe>
+      </div>
+      <div class="project-body" style="margin-top:0.6rem;">
+        An article about us in &ldquo;Haaretz&rdquo; &mdash;
+        <a href="https://www.haaretz.co.il/gallery/galleryfriday/2025-04-03/ty-article-magazine/.highlight/00000195-ebf3-deaf-a397-fff715050000"
+           target="_blank" rel="noopener" class="link">Link</a><br>
+        <a href="https://www.instagram.com/bein__harisot" target="_blank" rel="noopener">Instagram</a>
+        &nbsp;&nbsp;
+        <a href="https://open.spotify.com/artist/3rAjgNY1ERYqHfOpI31EIe" target="_blank" rel="noopener">Spotify</a>
+      </div>
+    </div>
+
+    <hr>
+
+    <div class="project">
+      <span class="caption">Tualet</span>
+      <!-- text directly under title, matching Bein HaHarisot structure -->
+      <div class="project-body">
+        An electronic duo that blends trip-hop, dub, and psychedelic rock with darkly humorous
+        and grotesque lyrics. We like to laugh at the human condition &mdash; embracing the inner
+        child, flirting with the darker urges, and ultimately losing the game on purpose.<br><br>
+        We started making music together in 2019 in a crumbling apartment in Haifa, later moving
+        between home studios and shaping a unique sound in Israel&rsquo;s alternative music scene.
+        Our debut EP &ldquo;Balayfa&rdquo; was released on vinyl in 2023 through Garzen Records.
+        In 2025, our first full-length album will be released under Holit Records, featuring ten
+        tracks that move between intimacy and defiance.
+      </div>
+      <div class="slideshow">
+        <button class="slide-prev">&#8592;</button>
+        <div class="slides-track">
+          <img src="assets/Music/TUALET/1.jpg" alt="Tualet 1">
+          <img src="assets/Music/TUALET/2.jpeg" alt="Tualet 2">
+          <img src="assets/Music/TUALET/3.jpg" alt="Tualet 3">
+          <img src="assets/Music/TUALET/4.jpg" alt="Tualet 4">
+          <img src="assets/Music/TUALET/5.jpg" alt="Tualet 5">
+          <img src="assets/Music/TUALET/1.jpg" alt="">
+          <img src="assets/Music/TUALET/2.jpeg" alt="">
+          <img src="assets/Music/TUALET/3.jpg" alt="">
+          <img src="assets/Music/TUALET/4.jpg" alt="">
+          <img src="assets/Music/TUALET/5.jpg" alt="">
+        </div>
+        <button class="slide-next">&#8594;</button>
+      </div>
+      <div class="video-wrap">
+        <iframe src="https://www.youtube-nocookie.com/embed/RnUxEeAUJyM?rel=0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen title="Tualet"></iframe>
+      </div>
+      <div class="project-body" style="margin-top:0.6rem;">
+        <a href="https://www.instagram.com/tualet_4_life/" target="_blank" rel="noopener">Instagram</a>
+        &nbsp;&nbsp;
+        <a href="https://open.spotify.com/artist/185Dt6V8NtUf4KuQl7dSqT" target="_blank" rel="noopener">Spotify</a>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ── About ── -->
+  <section id="page-about" class="page">
+    <h1 class="page-title">About</h1>
+
+    <div class="about-text">
+      <p>I am a multidisciplinary creator: screenwriter, director, editor, and musician.</p>
+      <p>
+        Born in 1996. I hold a BA in Comparative Literature and Philosophy from the Hebrew
+        University of Jerusalem, and I&rsquo;m a graduate of the Screenwriting Program at the
+        Sam Spiegel Film &amp; Television School.
+      </p>
+      <p>
+        My work is driven by a destructive love for language, its rhythm, richness, aggression
+        and contradictions. By the spark that is born when words meet images and sound.
+      </p>
+    </div>
+
+    <div class="about-photo">
+      <img src="assets/bio/IMG_2176.JPG" alt="Eden Akshoti">
+    </div>
+
+    <hr>
+
+    <span class="caption">Contact</span>
+    <div class="about-contact">
+      <a href="mailto:edenakshoti1@gmail.com">edenakshoti1@gmail.com</a>
+      <a href="https://www.instagram.com/eden_akshoti/" target="_blank" rel="noopener">Instagram</a>
+      <a href="CV/CV - Eden Akshoti (1).pdf" target="_blank">CV &ndash; ENG</a>
+      <a href="CV/CV_Hebrew_Eden_akshoti.pdf" target="_blank">CV &ndash; HEB</a>
+    </div>
+
+  </section>
+
+</div><!-- #content -->
+
+<!-- ─── PDF Modal ─── -->
+<div id="pdf-modal" class="pdf-modal">
+  <div class="pdf-modal-bar">
+    <span class="pdf-modal-title" id="pdf-modal-title"></span>
+    <div class="pdf-modal-actions">
+      <a id="pdf-btn-download" class="pdf-action-btn" download>Download</a>
+      <a id="pdf-btn-newtab"   class="pdf-action-btn" target="_blank" rel="noopener">Open in new tab</a>
+      <button class="pdf-action-btn pdf-action-close" onclick="closePDF()" aria-label="Close">&#215;</button>
+    </div>
+  </div>
+  <iframe id="pdf-frame" class="pdf-frame" src="" title="PDF viewer"></iframe>
+</div>
+
+<canvas id="cursor-canvas"></canvas>
+
+<script>
+  /* ── Routing ── */
+  const PAGES = ['film-works','video-editing','screenwriting','prose-and-poetry','music','about'];
+
+  function go(id) {
+    const hp = document.getElementById('page-homepage');
+    const ct = document.getElementById('content');
+    if (id === 'homepage') {
+      hp.classList.add('active');
+      ct.style.display = 'none';
+    } else {
+      hp.classList.remove('active');
+      ct.style.display = 'block';
+    }
+    PAGES.forEach(p => {
+      const el = document.getElementById('page-' + p);
+      if (el) el.classList.toggle('active', p === id);
+    });
+    document.querySelectorAll('[data-page]').forEach(a => {
+      a.classList.toggle('active', a.dataset.page === id);
+    });
+    if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
+  }
+
+  function routeFromHash() { go(location.hash.slice(1) || 'homepage'); }
+
+  window.addEventListener('hashchange', routeFromHash);
+  window.addEventListener('DOMContentLoaded', function() {
+    routeFromHash();
+    initSlideshows();
+  });
+
+  document.querySelectorAll('[data-page]').forEach(a => {
+    a.addEventListener('click', e => { e.preventDefault(); go(a.dataset.page); });
+  });
+
+  /* ── Slideshow: auto-scroll + arrow control ── */
+  function initSlideshows() {
+    document.querySelectorAll('.slideshow').forEach(function(ss) {
+      const track = ss.querySelector('.slides-track');
+      if (!track) return;
+      const SPEED = 0.5;
+      let pos = 0;
+
+      function half() { return track.scrollWidth / 2; }
+
+      (function loop() {
+        pos += SPEED;
+        const h = half();
+        if (h > 0 && pos >= h) pos -= h;
+        track.style.transform = 'translateX(-' + pos + 'px)';
+        requestAnimationFrame(loop);
+      })();
+
+      function jump(dir) {
+        const img = track.querySelector('img');
+        if (!img) return;
+        const step = img.offsetWidth + 4;
+        pos += dir * step;
+        const h = half();
+        if (pos < 0) pos += h;
+        if (pos >= h) pos -= h;
+      }
+
+      const prev = ss.querySelector('.slide-prev');
+      const next = ss.querySelector('.slide-next');
+      if (prev) prev.addEventListener('click', function() { jump(-1); });
+      if (next) next.addEventListener('click', function() { jump(1); });
+    });
+  }
+
+  /* ── Mobile nav ── */
+  function openNav()  { document.getElementById('mob-overlay').classList.add('open'); }
+  function closeNav() { document.getElementById('mob-overlay').classList.remove('open'); }
+
+  /* ── PDF viewer ── */
+  function openPDF(src, title) {
+    document.getElementById('pdf-modal-title').textContent = title;
+    document.getElementById('pdf-frame').src = src + '#toolbar=0&navpanes=0';
+    document.getElementById('pdf-btn-download').href = src;
+    document.getElementById('pdf-btn-download').download = src.split('/').pop();
+    document.getElementById('pdf-btn-newtab').href   = src;
+    document.getElementById('pdf-modal').classList.add('open');
+  }
+  function closePDF() {
+    document.getElementById('pdf-modal').classList.remove('open');
+    document.getElementById('pdf-frame').src = '';
+  }
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closePDF();
+  });
+
+  /* ── Cursor (yellow square) ── */
+  (function () {
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    const canvas = document.getElementById('cursor-canvas');
+    const ctx    = canvas.getContext('2d');
+    const DOT    = 8;
+    let W, H;
+    function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+    resize();
+    window.addEventListener('resize', resize);
+    window.addEventListener('mousemove', function (e) {
+      ctx.clearRect(0, 0, W, H);
+      const x = Math.floor(e.clientX / DOT) * DOT;
+      const y = Math.floor(e.clientY / DOT) * DOT;
+      ctx.fillStyle = '#ffc600';
+      ctx.fillRect(x, y, DOT, DOT);
+    });
+  })();
+</script>
+
+</body>
+</html>
