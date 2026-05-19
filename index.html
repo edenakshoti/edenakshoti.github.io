@@ -487,6 +487,24 @@
       .about-text p { font-size: 1.3rem; }
       .caption { font-size: 1.5rem; }
       .about-photo img { width: 80%; max-width: 300px; }
+
+      .pdf-modal {
+        left: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+      }
+      .pdf-modal-bar {
+        position: sticky;
+        top: 0;
+        background: var(--bg);
+        z-index: 1;
+      }
+      .pdf-frame {
+        flex: none;
+        width: 100%;
+        min-height: 85vh;
+      }
     }
   </style>
 </head>
@@ -538,7 +556,7 @@
 <!-- ─── Homepage ─── -->
 <div id="page-homepage" class="active">
   <iframe
-    src="https://www.youtube-nocookie.com/embed/ufvg7bfTD5o?autoplay=1&mute=1&loop=1&playlist=ufvg7bfTD5o&controls=0&showinfo=0&rel=0&playsinline=1&modestbranding=1"
+    src="https://www.youtube-nocookie.com/embed/ufvg7bfTD5o?autoplay=1&mute=1&loop=1&playlist=ufvg7bfTD5o&controls=0&showinfo=0&rel=0&playsinline=1&modestbranding=1&enablejsapi=1"
     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
     allowfullscreen title="Eden Akshoti Showreel">
   </iframe>
@@ -972,6 +990,12 @@
   window.addEventListener('DOMContentLoaded', function() {
     routeFromHash();
     initSlideshows();
+    var hpIframe = document.querySelector('#page-homepage iframe');
+    if (hpIframe) {
+      hpIframe.addEventListener('load', function() {
+        hpIframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+      });
+    }
   });
 
   document.querySelectorAll('[data-page]').forEach(a => {
@@ -1020,7 +1044,15 @@
   /* ── PDF viewer ── */
   function openPDF(src, title) {
     document.getElementById('pdf-modal-title').textContent = title;
-    document.getElementById('pdf-frame').src = src + '#toolbar=0&navpanes=0';
+    var isMobile = window.innerWidth <= 768;
+    var frameSrc;
+    if (isMobile) {
+      var absoluteSrc = new URL(src, window.location.href).href;
+      frameSrc = 'https://docs.google.com/viewer?url=' + encodeURIComponent(absoluteSrc) + '&embedded=true';
+    } else {
+      frameSrc = src + '#toolbar=0&navpanes=0';
+    }
+    document.getElementById('pdf-frame').src = frameSrc;
     document.getElementById('pdf-btn-download').href = src;
     document.getElementById('pdf-btn-download').download = src.split('/').pop();
     document.getElementById('pdf-btn-newtab').href   = src;
